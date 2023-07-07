@@ -40,6 +40,53 @@ class Itinerary {
     return res.send(itineraries);
   }
 
+    async sendEmail(req, res) {
+   
+    console.log(req.params.id);
+    try {
+      const user = await User.findById(req.user.id).select("+email");
+      console.log(user);
+      if (!user) {
+        return;
+      }
+      let data = await itineraryService.getSingleItinerary(req.params.id);
+
+      let transporter = nodemailer.createTransport({
+        host: "smtp.office365.com",
+        port: 587,
+        secure: false,
+        auth: {
+          user: "Booking@myvoyages.com",
+          pass: "MyVoyages2021$23",
+       
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
+      let mailOptions = {
+        from: "Booking@myvoyages.com",
+
+        to: user.email,
+        subject: "Checkout Completed",
+        text: `Checkout has been completed for itinerary ID: ${req.params.id}.and the seller name is `,
+        // html: "<b>Hello world?</b>", // html body
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log(error);
+          // return { message: "email" };
+        } else {
+          console.log("Message sent: %s", info.messageId);
+        }
+      });
+     
+    } catch (error) {
+      console.log("email not sent!");
+      console.log(error);
+    
+  }
+
   async getPurchasedItineraries(req, res) {
     let user = await User.findById(req.user.id).select("boughtItineraries");
 
