@@ -20,7 +20,7 @@ class ItineraryService {
    
    });
 
-    return itineraries;
+    return filteredItineraries;
   }
 
   async getSingleItinerary(id) {
