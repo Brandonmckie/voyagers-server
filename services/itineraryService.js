@@ -13,9 +13,9 @@ class ItineraryService {
     
    // let filteredItineraries = itineraries.filter((each) => each.userId.stripeConnected);
 
-    //let filteredItineraries = itineraries.filter((each) => each.userId.stripeConnected);
+    let filteredItineraries = itineraries.filter((each) => each.userId.stripeConnected);
 
-    return itineraries;
+    return filteredItineraries;
   }
 
   async getSingleItinerary(id) {
