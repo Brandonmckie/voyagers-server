@@ -13,7 +13,12 @@ class ItineraryService {
     
    // let filteredItineraries = itineraries.filter((each) => each.userId.stripeConnected);
 
-  //  let filteredItineraries = itineraries.filter((each) => each.userId.stripeConnected);
+   let filteredItineraries = itineraries.filter((each) =>{
+     if(each.userId?.stripeConnected){
+       return each
+     }
+   
+   });
 
     return itineraries;
   }
