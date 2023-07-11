@@ -40,8 +40,7 @@ class Itinerary {
     return res.send(itineraries);
   }
 
-    async sendEmail(req, res) {
-   
+  async sendEmail(req, res) {
     console.log(req.params.id);
     try {
       const user = await User.findById(req.user.id).select("+email");
@@ -58,7 +57,6 @@ class Itinerary {
         auth: {
           user: "Booking@myvoyages.com",
           pass: "MyVoyages2021$23",
-       
         },
         tls: {
           rejectUnauthorized: false,
@@ -80,11 +78,10 @@ class Itinerary {
           console.log("Message sent: %s", info.messageId);
         }
       });
-     
     } catch (error) {
       console.log("email not sent!");
       console.log(error);
-    
+    }
   }
 
   async getPurchasedItineraries(req, res) {
