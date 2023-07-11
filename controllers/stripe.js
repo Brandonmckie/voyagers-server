@@ -114,7 +114,7 @@ class StripeController {
           destination: itinerary.userId.accountId,
         },
       },
-      success_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + `?status=success`,
+      success_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + `?status=success&check=${req.body.isChecked}`,
       cancel_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + "?status=cancel",
     });
 
