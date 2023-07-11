@@ -16,6 +16,11 @@ import config from "./config/config.js";
 import { handleWebhooks } from "./controllers/webhookController.js";
 import bodyParser from "body-parser";
 
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
+
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
