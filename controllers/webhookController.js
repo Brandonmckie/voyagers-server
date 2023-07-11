@@ -11,7 +11,7 @@ export const handleWebhooks = async (request, response) => {
     // const endpointSecret =
     //   "whsec_53ff7ba4ca953a9868389cdca5509f9232a8bedcf66f36d6562ed36be9503abd";
     // const endpointSecret = "whsec_y8UwZiVUwOTbz0QZF8BY6rerkLHfMykf";
-    const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+    const endpointSecret = process.env.STRIPE_KEY;
 
     // Only verify the event if you have an endpoint secret defined.
     // Otherwise use the basic event deserialized with JSON.parse
