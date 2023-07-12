@@ -988,9 +988,34 @@ class UserController {
       console.log(error);
     }
   }
+async getCountries(req, res) {
+  try {
+    const itineraries = await Itinerary.find();
+    const filteredCountries = {};
+
+    Object.entries(countries).forEach(([countryKey, countryValues]) => {
+      const uniqueCountries = [];
+      itineraries.forEach((itinerary) => {
+        const country = countryValues.find((val) => itinerary.country === val.code);
+
+        if (country && !uniqueCountries.some((c) => c.code === country.code)) {
+          uniqueCountries.push(country);
+        }
+      });
+
+      if (uniqueCountries.length > 0) {
+        filteredCountries[countryKey] = uniqueCountries;
+      }
+    });
+
+    return res.send(filteredCountries);
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 
-  async getCountries(req, res) {
+  async getCountriesld(req, res) {
     try {
       const itineraries = await Itinerary.find();
       let filteredCountries = {};
