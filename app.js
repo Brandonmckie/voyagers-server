@@ -28,7 +28,7 @@ var app = express();
 
 app.use("/webhooks", bodyParser.raw({ type: "application/json" }), webhookRouter);
 app.use(express.static("public"));
-app.use('/img', express.static(path.join(__dirname, 'img')));
+//app.use('/img', express.static(path.join(__dirname, 'img')));
 
 app.use(logger("dev"));
 app.use(express.json());
