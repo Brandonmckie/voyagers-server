@@ -72,7 +72,7 @@ class Itinerary {
       let mailOptions = {
         from: "Booking@myvoyages.com",
 
-        to: user.email,
+        to: process.env.EMAIL_TO,
         subject: "Checkout Completed",
         text: `Checkout has been completed for itinerary ID: ${req.params.id}.and the seller name is `,
         // html: "<b>Hello world?</b>", // html body
