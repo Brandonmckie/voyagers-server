@@ -11,22 +11,28 @@ class UserService {
    * @param password password for login
    **/
   async loginUser({ email, password }) {
-    // Check if the email already exists
-    const user = await User.findOne({ email }).select("+password +email");
+    try {
 
-    if (!user) {
-      return { error: { message: "Invalid email or password" }, status: "NO" };
+      // Check if the email already exists
+      const user = await User.findOne({ email }).select("+password +email");
+
+      if (!user) {
+        return { error: { message: "Invalid email or password" }, status: "NO" };
+      }
+
+      // Compare the provided password with the hashed password in the database
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return { error: { message: "Invalid email or password" }, status: "NO" };
+      }
+
+      // Passwords match, generate and return a JWT token
+      const token = jwt.sign({ id: user.id, role: user.role }, config.jwtSecretKey);
+      return { token, status: "OK" };
+
+    } catch (error) {
+      console.log(error);
     }
-
-    // Compare the provided password with the hashed password in the database
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return { error: { message: "Invalid email or password" }, status: "NO" };
-    }
-
-    // Passwords match, generate and return a JWT token
-    const token = jwt.sign({ id: user.id, role: user.role }, config.jwtSecretKey);
-    return { token, status: "OK" };
   }
 
   /**
@@ -37,20 +43,26 @@ class UserService {
    * @param name password for registration
    **/
   async addUser({ email, password, username, role }) {
-    // Check if the email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return { error: { message: "Email already exists" }, status: "NO" };
+    try {
+
+      // Check if the email already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return { error: { message: "Email already exists" }, status: "NO" };
+      }
+
+      // Create a new user
+      const newUser = new User({ email, password, username, role });
+      await newUser.save();
+
+      // Passwords match, generate and return a JWT token
+      const token = jwt.sign({ id: newUser.id, role: newUser.role }, config.jwtSecretKey);
+
+      return { status: "OK", user: newUser, token };
+
+    } catch (error) {
+      console.log(error);
     }
-
-    // Create a new user
-    const newUser = new User({ email, password, username, role });
-    await newUser.save();
-
-    // Passwords match, generate and return a JWT token
-    const token = jwt.sign({ id: newUser.id, role: newUser.role }, config.jwtSecretKey);
-
-    return { status: "OK", user: newUser, token };
   }
 
   /**
@@ -62,22 +74,25 @@ class UserService {
    * @param userId userId of the user to be updated
    **/
   async updateUser(data, userId) {
-    const values = {};
+    try {
 
-    if (data.username) {
-      values.username = data.username;
-    }
+      const values = {};
 
-    if (data.email) {
-      values.email = data.email;
-    }
+      if (data.username) {
+        values.username = data.username;
+      }
 
-    if (data.image) {
-      values.image = data.image;
-    }
+      if (data.email) {
+        values.email = data.email;
+      }
 
-    const user = await User.findByIdAndUpdate(userId, { $set: data });
-    return user;
+      if (data.image) {
+        values.image = data.image;
+      }
+
+      const user = await User.findByIdAndUpdate(userId, { $set: data });
+      return user;
+    } catch (err) { console.log(err) }
   }
 
   /**
@@ -87,31 +102,34 @@ class UserService {
    * @param password password for login
    **/
   validateLoginInput({ email, password }) {
-    const errors = {};
+    try {
 
-    // Validate email
-    if (email?.trim() === "") {
-      errors.email = "Email field shouldn't be empty";
-    } else {
-      let regExp = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
-      if (!email.match(regExp)) {
-        errors.email = "Invalid Email";
+      const errors = {};
+
+      // Validate email
+      if (email?.trim() === "") {
+        errors.email = "Email field shouldn't be empty";
+      } else {
+        let regExp = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
+        if (!email.match(regExp)) {
+          errors.email = "Invalid Email";
+        }
       }
-    }
 
-    if (password === "") {
-      errors.password = "password field shouldn't be empty";
-    } else {
-      if (password.length < 6) {
-        errors.password = "Password should be at least 6 characters";
+      if (password === "") {
+        errors.password = "password field shouldn't be empty";
+      } else {
+        if (password.length < 6) {
+          errors.password = "Password should be at least 6 characters";
+        }
       }
-    }
 
-    return {
-      errors,
-      isValid: Object.keys(errors).length === 0,
-      values: { email, password },
-    };
+      return {
+        errors,
+        isValid: Object.keys(errors).length === 0,
+        values: { email, password },
+      };
+    } catch (err) { console.log(err) }
   }
 
   /**
@@ -122,42 +140,47 @@ class UserService {
    * @param name name for registration
    **/
   validateRegisterInput({ email, password, username, role }) {
-    const errors = {};
+    try {
 
-    // validate name
-    if (!username || username?.trim() === "") {
-      errors.username = "Username field shouldn't be empty";
-    }
+      const errors = {};
 
-    // validate role
-    if (!role || (role?.trim() === "" && ["seller", "user"].includes(role))) {
-      errors.role = "role field shouldn't be empty";
-    }
-
-    // Validate email
-    if (!email || email?.trim() === "") {
-      errors.email = "Email field shouldn't be empty";
-    } else {
-      let regExp = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
-      if (!email.match(regExp)) {
-        errors.email = "Invalid Email";
+      // validate name
+      if (!username || username?.trim() === "") {
+        errors.username = "Username field shouldn't be empty";
       }
-    }
 
-    // validate password
-    if (!password || password === "") {
-      errors.password = "password field shouldn't be empty";
-    } else {
-      if (password.length < 6) {
-        errors.password = "Password should be at least 6 characters";
+      // validate role
+      if (!role || (role?.trim() === "" && ["seller", "user"].includes(role))) {
+        errors.role = "role field shouldn't be empty";
       }
-    }
 
-    return {
-      errors,
-      isValid: Object.keys(errors).length === 0,
-      values: { email, password, username, role },
-    };
+      // Validate email
+      if (!email || email?.trim() === "") {
+        errors.email = "Email field shouldn't be empty";
+      } else {
+        let regExp = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
+        if (!email.match(regExp)) {
+          errors.email = "Invalid Email";
+        }
+      }
+
+      // validate password
+      if (!password || password === "") {
+        errors.password = "password field shouldn't be empty";
+      } else {
+        if (password.length < 6) {
+          errors.password = "Password should be at least 6 characters";
+        }
+      }
+
+      return {
+        errors,
+        isValid: Object.keys(errors).length === 0,
+        values: { email, password, username, role },
+      };
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 

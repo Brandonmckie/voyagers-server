@@ -2,86 +2,102 @@ import Itinerary from "../models/Itinerary.js";
 
 class ItineraryService {
   async addItinerary(values) {
-    let itinerary = await Itinerary.create(values);
-    return itinerary;
+    try {
+
+      let itinerary = await Itinerary.create(values);
+      return itinerary;
+    } catch (err) { console.log(err) }
   }
 
   async getListing(query, limit) {
-    const itineraries = await Itinerary.find(query).populate("userId").limit(limit);
+    try {
+      const itineraries = await Itinerary.find(query).populate("userId").limit(limit);
 
-    console.log(JSON.stringify(itineraries));
-    
-   // let filteredItineraries = itineraries.filter((each) => each.userId.stripeConnected);
+      console.log(JSON.stringify(itineraries));
 
-   let filteredItineraries = itineraries.filter((each) =>{
-     if(each.userId?.stripeConnected){
-       return each
-     }
-   
-   });
+      // let filteredItineraries = itineraries.filter((each) => each.userId.stripeConnected);
 
-    return filteredItineraries;
+      let filteredItineraries = itineraries.filter((each) => {
+        if (each.userId?.stripeConnected) {
+          return each
+        }
+
+      });
+
+      return filteredItineraries;
+    } catch (err) { console.log(err) }
   }
 
   async getSingleItinerary(id) {
     try {
-      const itineraries = await Itinerary.findById(id).populate("userId");
-      console.log("\n\n\n\n Itinerary data");
-      return itineraries._doc;
-    } catch (err) {
-      console.log("\n\n\n\n Erorr", err);
+
+      try {
+        const itineraries = await Itinerary.findById(id).populate("userId");
+        console.log("\n\n\n\n Itinerary data");
+        return itineraries._doc;
+      } catch (err) {
+        console.log("\n\n\n\n Erorr", err);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 
   async deleteDay(id, data) {
-    const itinerary = await Itinerary.findByIdAndUpdate(id, { $set: { eachDetail: data } });
-    return itinerary;
+    try {
+      const itinerary = await Itinerary.findByIdAndUpdate(id, { $set: { eachDetail: data } });
+      return itinerary;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   parseImages(files, data) {
-    let eachDetail = JSON.parse(data.eachDetail);
-    // let eachData = [{}];
-    return eachDetail.map((each, idx) => {
-      let objData = {
-        stayImages: each.stayImages ? [...each.stayImages] : [],
-        tasteImages: each.tasteImages ? [...each.tasteImages] : [],
-        experienceImages: each.experienceImages ? [...each.experienceImages] : [],
-        vibeImages: each.vibeImages ? [...each.vibeImages] : [],
-        ...each,
-      };
-      files
-        .filter((each) => each.fieldname !== "image")
-        .map((file, idx) => {
-          if (file.fieldname.includes(`eachDetail[${each.day}].stayImages[`)) {
-            objData = {
-              ...objData,
-              stayImages: [...objData.stayImages, `${process.env.BASE_URL}/img/${file.filename}`],
-            };
-          }
+    try {
+      let eachDetail = JSON.parse(data.eachDetail);
+      // let eachData = [{}];
+      return eachDetail.map((each, idx) => {
+        let objData = {
+          stayImages: each.stayImages ? [...each.stayImages] : [],
+          tasteImages: each.tasteImages ? [...each.tasteImages] : [],
+          experienceImages: each.experienceImages ? [...each.experienceImages] : [],
+          vibeImages: each.vibeImages ? [...each.vibeImages] : [],
+          ...each,
+        };
+        files
+          .filter((each) => each.fieldname !== "image")
+          .map((file, idx) => {
+            if (file.fieldname.includes(`eachDetail[${each.day}].stayImages[`)) {
+              objData = {
+                ...objData,
+                stayImages: [...objData.stayImages, `${process.env.BASE_URL}/img/${file.filename}`],
+              };
+            }
 
-          if (file.fieldname.includes(`eachDetail[${each.day}].experienceImages[`)) {
-            objData = {
-              ...objData,
-              experienceImages: [...objData.experienceImages, `${process.env.BASE_URL}/img/${file.filename}`],
-            };
-          }
+            if (file.fieldname.includes(`eachDetail[${each.day}].experienceImages[`)) {
+              objData = {
+                ...objData,
+                experienceImages: [...objData.experienceImages, `${process.env.BASE_URL}/img/${file.filename}`],
+              };
+            }
 
-          if (file.fieldname.includes(`eachDetail[${each.day}].vibeImages[`)) {
-            objData = {
-              ...objData,
-              vibeImages: [...objData.vibeImages, `${process.env.BASE_URL}/img/${file.filename}`],
-            };
-          }
+            if (file.fieldname.includes(`eachDetail[${each.day}].vibeImages[`)) {
+              objData = {
+                ...objData,
+                vibeImages: [...objData.vibeImages, `${process.env.BASE_URL}/img/${file.filename}`],
+              };
+            }
 
-          if (file.fieldname.includes(`eachDetail[${each.day}].tasteImages[`)) {
-            objData = {
-              ...objData,
-              tasteImages: [...objData.tasteImages, `${process.env.BASE_URL}/img/${file.filename}`],
-            };
-          }
-        });
-      return objData;
-    });
+            if (file.fieldname.includes(`eachDetail[${each.day}].tasteImages[`)) {
+              objData = {
+                ...objData,
+                tasteImages: [...objData.tasteImages, `${process.env.BASE_URL}/img/${file.filename}`],
+              };
+            }
+          });
+        return objData;
+      });
+    } catch (err) { console.log(err) }
   }
 
   async updateItinerary(data, itineraryId) {
@@ -107,57 +123,63 @@ class ItineraryService {
   }
 
   validateItineraryInput(data, files) {
-    let errors = {};
-    // validate Title
-    if (!data.title || data.title?.trim() === "") {
-      errors.title = "Title field shouldn't be empty";
-    }
+    try {
 
-    // validate Country
-    if (!data.country || data.country?.trim() === "") {
-      errors.country = "Country field shouldn't be empty";
-    }
+      let errors = {};
+      // validate Title
+      if (!data.title || data.title?.trim() === "") {
+        errors.title = "Title field shouldn't be empty";
+      }
 
-    // validate Price
-    if (!data.price || data.price?.trim() === "") {
-      errors.price = "Price field shouldn't be empty";
-    }
+      // validate Country
+      if (!data.country || data.country?.trim() === "") {
+        errors.country = "Country field shouldn't be empty";
+      }
 
-    // validate Introduction
-    if (!data.introduction || data.introduction?.trim() === "") {
-      errors.introduction = "Introduction field shouldn't be empty";
-    }
+      // validate Price
+      if (!data.price || data.price?.trim() === "") {
+        errors.price = "Price field shouldn't be empty";
+      }
 
-    // validate Image
-    if (!data.image && (!files || !files.find((each) => each.fieldname === "image"))) {
-      errors.image = "Images shouldn't be empty";
-    }
+      // validate Introduction
+      if (!data.introduction || data.introduction?.trim() === "") {
+        errors.introduction = "Introduction field shouldn't be empty";
+      }
 
-    // validate Sales Pitch
-    if (!data.salesPitch || data.salesPitch?.trim() === "") {
-      errors.salesPitch = "Sales Pitch field shouldn't be empty";
-    }
+      // validate Image
+      if (!data.image && (!files || !files.find((each) => each.fieldname === "image"))) {
+        errors.image = "Images shouldn't be empty";
+      }
 
-    // validate category
-    data.category = JSON.parse(data.category);
-    if (!data.category || data.category.length < 1) {
-      errors.category = "Category field shouldn't be empty";
-    }
+      // validate Sales Pitch
+      if (!data.salesPitch || data.salesPitch?.trim() === "") {
+        errors.salesPitch = "Sales Pitch field shouldn't be empty";
+      }
 
-    return {
-      errors,
-      isValid: Object.keys(errors).length === 0,
-      values: {
-        country: data.country,
-        price: data.price,
-        category: data.category,
-        introduction: data.introduction,
-        salesPitch: data.salesPitch,
-        image: data.image,
-        eachDetail: data.eachDetail,
-        title: data.title,
-      },
-    };
+      // validate category
+      data.category = JSON.parse(data.category);
+      if (!data.category || data.category.length < 1) {
+        errors.category = "Category field shouldn't be empty";
+      }
+
+      return {
+        errors,
+        isValid: Object.keys(errors).length === 0,
+        values: {
+          country: data.country,
+          price: data.price,
+          category: data.category,
+          introduction: data.introduction,
+          salesPitch: data.salesPitch,
+          image: data.image,
+          eachDetail: data.eachDetail,
+          title: data.title,
+        },
+      };
+
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 

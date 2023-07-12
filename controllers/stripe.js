@@ -58,13 +58,16 @@ class StripeController {
   }
 
   async getUser(req, res) {
-    let userAccount = await User.findById(req.user.id).select("+accountId +isCompleted +role");
+    try {
 
-    if (!userAccount.accountId) {
-      return res.send({ isCompleted: false });
-    } else {
-      return res.send({ isCompleted: true });
-    }
+      let userAccount = await User.findById(req.user.id).select("+accountId +isCompleted +role");
+
+      if (!userAccount.accountId) {
+        return res.send({ isCompleted: false });
+      } else {
+        return res.send({ isCompleted: true });
+      }
+    } catch (err) { console.log(err) }
   }
 
   async getStripeAccount(req, res) {
@@ -85,40 +88,43 @@ class StripeController {
   }
 
   async checkout(req, res) {
-    let itinerary = await Itinerary.findById(req.body.itineraryId).populate({ path: "userId", select: "+accountId" });
-    const user = await User.findById(req.user.id).select("+email");
-    if (!user) {
-      return res.send({ errors: "errors" });
-    }
+    try {
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      customer_email: user.email,
-      metadata: { itinerary: itinerary._id.toString() },
-      line_items: [
-        {
-          price_data: {
-            currency: "USD",
-            unit_amount: Number(itinerary.price) * 100,
-            product_data: {
-              name: "Itinerary",
-              description: "This itinerary needs more info",
+      let itinerary = await Itinerary.findById(req.body.itineraryId).populate({ path: "userId", select: "+accountId" });
+      const user = await User.findById(req.user.id).select("+email");
+      if (!user) {
+        return res.send({ errors: "errors" });
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        customer_email: user.email,
+        metadata: { itinerary: itinerary._id.toString() },
+        line_items: [
+          {
+            price_data: {
+              currency: "USD",
+              unit_amount: Number(itinerary.price) * 100,
+              product_data: {
+                name: "Itinerary",
+                description: "This itinerary needs more info",
+              },
             },
+            quantity: 1,
           },
-          quantity: 1,
+        ],
+        payment_intent_data: {
+          application_fee_amount: Number(itinerary.price) * 100 * 0.2,
+          transfer_data: {
+            destination: itinerary.userId.accountId,
+          },
         },
-      ],
-      payment_intent_data: {
-        application_fee_amount: Number(itinerary.price) * 100 * 0.2,
-        transfer_data: {
-          destination: itinerary.userId.accountId,
-        },
-      },
-      success_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + `?status=success&check=${req.body.isChecked}`,
-      cancel_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + "?status=cancel",
-    });
+        success_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + `?status=success&check=${req.body.isChecked}`,
+        cancel_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + "?status=cancel",
+      });
 
-    return res.send(session.url);
+      return res.send(session.url);
+    } catch (err) { console.log(err) }
   }
 }
 
