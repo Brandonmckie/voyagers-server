@@ -25,9 +25,9 @@ const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
 var app = express();
-
-app.use("/webhooks", bodyParser.raw({ type: "application/json" }), webhookRouter);
 app.use(express.static("public"));
+app.use("/webhooks", bodyParser.raw({ type: "application/json" }), webhookRouter);
+
 //app.use('/img', express.static(path.join(__dirname, 'img')));
 
 app.use(logger("dev"));
