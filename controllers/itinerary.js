@@ -48,11 +48,7 @@ class Itinerary {
 
       // query["userId.stripeConnected"] = true;
 
-     // const itineraries = await itineraryService.getListing(query, limit);
-      const itineraries = await Itinerary.find(query)
-      .populate("userId")
-      .sort({ createdAt: -1 }) 
-      .limit(limit);
+      const itineraries = await itineraryService.getListing(query, limit);
       
       return res.send(itineraries);
     } catch (error) {
