@@ -1,36 +1,36 @@
 import Itinerary from "../models/Itinerary.js";
+import { mediaUpload } from "../utils/amazonUpload.js";
 
 class ItineraryService {
   async addItinerary(values) {
     try {
-
       let itinerary = await Itinerary.create(values);
       return itinerary;
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async getListing(query, limit) {
     try {
       const itineraries = await Itinerary.find(query).populate("userId").limit(limit);
 
-      console.log(JSON.stringify(itineraries));
-
       // let filteredItineraries = itineraries.filter((each) => each.userId.stripeConnected);
 
       let filteredItineraries = itineraries.filter((each) => {
         if (each.userId?.stripeConnected) {
-          return each
+          return each;
         }
-
       });
 
       return filteredItineraries;
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async getSingleItinerary(id) {
     try {
-
       try {
         const itineraries = await Itinerary.findById(id).populate("userId");
         console.log("\n\n\n\n Itinerary data");
@@ -66,38 +66,46 @@ class ItineraryService {
         };
         files
           .filter((each) => each.fieldname !== "image")
-          .map((file, idx) => {
+          .map(async (file, idx) => {
             if (file.fieldname.includes(`eachDetail[${each.day}].stayImages[`)) {
+              let url = await mediaUpload(file);
+              console.log(url);
               objData = {
                 ...objData,
-                stayImages: [...objData.stayImages, `${process.env.BASE_URL}/img/${file.filename}`],
+                // stayImages: [...objData.stayImages, `${process.env.BASE_URL}/img/${file.filename}`],
+                stayImages: [...objData.stayImages, url],
               };
             }
 
             if (file.fieldname.includes(`eachDetail[${each.day}].experienceImages[`)) {
+              let url = await mediaUpload(file);
               objData = {
                 ...objData,
-                experienceImages: [...objData.experienceImages, `${process.env.BASE_URL}/img/${file.filename}`],
+                experienceImages: [...objData.experienceImages, url],
               };
             }
 
             if (file.fieldname.includes(`eachDetail[${each.day}].vibeImages[`)) {
+              let url = await mediaUpload(file);
               objData = {
                 ...objData,
-                vibeImages: [...objData.vibeImages, `${process.env.BASE_URL}/img/${file.filename}`],
+                vibeImages: [...objData.vibeImages, url],
               };
             }
 
             if (file.fieldname.includes(`eachDetail[${each.day}].tasteImages[`)) {
+              let url = await mediaUpload(file);
               objData = {
                 ...objData,
-                tasteImages: [...objData.tasteImages, `${process.env.BASE_URL}/img/${file.filename}`],
+                tasteImages: [...objData.tasteImages, url],
               };
             }
           });
         return objData;
       });
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async updateItinerary(data, itineraryId) {
@@ -124,7 +132,6 @@ class ItineraryService {
 
   validateItineraryInput(data, files) {
     try {
-
       let errors = {};
       // validate Title
       if (!data.title || data.title?.trim() === "") {
@@ -176,7 +183,6 @@ class ItineraryService {
           title: data.title,
         },
       };
-
     } catch (error) {
       console.log(error);
     }
