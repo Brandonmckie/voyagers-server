@@ -1,27 +1,34 @@
 import User from "../models/User.js";
 import itineraryService from "../services/itineraryService.js";
 import ItineraryModel from "../models/Itinerary.js";
+import { mediaUpload } from "../utils/amazonUpload.js";
 
 class Itinerary {
   async addItinierary(req, res) {
     try {
-      let { values, errors, isValid } = itineraryService.validateItineraryInput(req.body, req.files);
+      let { values, errors, isValid } = itineraryService.validateItineraryInput(
+        req.body,
+        req.files
+      );
+
       const parseData = itineraryService.parseImages(req.files, req.body);
 
       if (!isValid) {
         return res.status(400).json(errors);
       }
       let image = req.files.find((each) => each.fieldname === "image");
+      let url = await mediaUpload(image);
 
       let itinerary = await itineraryService.addItinerary({
         ...values,
         userId: req.user.id,
-        image: process.env.BASE_URL + "/img/" + image?.filename,
+        image: url,
         eachDetail: parseData,
       });
+      console.log(itinerary);
       return res.send(itinerary);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -93,7 +100,6 @@ class Itinerary {
 
   async getPurchasedItineraries(req, res) {
     try {
-
       let user = await User.findById(req.user.id).select("boughtItineraries");
 
       let query = req.query;
@@ -115,13 +121,12 @@ class Itinerary {
       const itineraries = await itineraryService.getListing(query, limit);
       return res.send(itineraries);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
   }
 
   async getMyItineraries(req, res) {
     try {
-
       let query = req.query;
       if (query.region) {
         query.country = query.region;
@@ -138,22 +143,27 @@ class Itinerary {
 
       const itineraries = await itineraryService.getListing(query, limit);
       return res.send(itineraries);
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async getSingleItinerary(req, res) {
     try {
-
       let { itineraryId } = req.params;
       const itinerary = await itineraryService.getSingleItinerary(itineraryId);
       return res.send(itinerary);
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async updateItinerary(req, res) {
     try {
-
-      let { values, errors, isValid } = itineraryService.validateItineraryInput(req.body, req.files);
+      let { values, errors, isValid } = itineraryService.validateItineraryInput(
+        req.body,
+        req.files
+      );
       const parseData = itineraryService.parseImages(req.files, req.body);
       let itineraryId = req.params.itineraryId;
 
@@ -172,19 +182,22 @@ class Itinerary {
         itineraryId
       );
       return res.send(itinerary);
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async deleteDay(req, res) {
     try {
       const itinerary = await itineraryService.deleteDay(req.body.itineraryId, req.body.newValues);
       return res.send(itinerary);
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async deleteItinerary(req, res) {
     try {
-
       const itinerary = await ItineraryModel.findById(req.params.itinerary);
 
       if (!itinerary) {
@@ -207,7 +220,9 @@ class Itinerary {
       }
 
       return res.status(400).json({ message: "You are not authorized to delete this itinerary" });
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 
