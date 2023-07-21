@@ -34,7 +34,12 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(cors());
+
+const corsOptions = {
+  origin: 'https://myvoyages.com',
+};
+
+app.use(cors(corsOptions));
 
 // Passport JWT implementation
 passport.use(
