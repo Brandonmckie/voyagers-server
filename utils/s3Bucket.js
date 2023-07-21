@@ -1,7 +1,7 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
 
-export const s3Uploadv2 = async (file) => {
+export const s3Uploadv2 = async (file, key) => {
   let filename;
   let fileBuffer;
   if (file?.originalname) {
@@ -11,7 +11,7 @@ export const s3Uploadv2 = async (file) => {
     filename = file[0]?.originalname;
     fileBuffer = file[0]?.buffer;
   }
-
+ 
   const s3client = new S3Client({
     region: process.env.region,
     credentials: {
@@ -19,14 +19,14 @@ export const s3Uploadv2 = async (file) => {
       secretAccessKey: process.env.secretAccessKey,
     },
   });
+ 
 
   const params = {
     Bucket: process.env.bucketname,
-    Key: `uploads/${uuidv4()}-${filename}`,
+    Key: key ? key : `uploads/${uuidv4()}-${filename}`,
     Body: fileBuffer,
   };
   let data = await s3client.send(new PutObjectCommand(params));
-  console.log(data);
   let fileLocation = `https://${process.env.bucketname}.s3.amazonaws.com/${params.Key}`;
   return fileLocation;
 };
