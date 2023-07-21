@@ -52,10 +52,9 @@ class ItineraryService {
     }
   }
 
-  parseImages(files, data) {
+ parseImages(files, data) {
     try {
       let eachDetail = JSON.parse(data.eachDetail);
-      // let eachData = [{}];
       return eachDetail.map((each, idx) => {
         let objData = {
           stayImages: each.stayImages ? [...each.stayImages] : [],
@@ -64,49 +63,91 @@ class ItineraryService {
           vibeImages: each.vibeImages ? [...each.vibeImages] : [],
           ...each,
         };
+
         files
-          .filter((each) => each.fieldname !== "image")
+          .filter((file) => file.fieldname !== "image")
           .map(async (file, idx) => {
             if (file.fieldname.includes(`eachDetail[${each.day}].stayImages[`)) {
-              let url = await mediaUpload(file);
-              console.log(url);
+              let filename;
+              if (file?.originalname) {
+                filename = file?.originalname;
+              } else {
+                filename = file[0]?.originalname;
+              }
+              let key = `uploads/${uuidv4()}-${filename}`;
               objData = {
                 ...objData,
-                // stayImages: [...objData.stayImages, `${process.env.BASE_URL}/img/${file.filename}`],
-                stayImages: [...objData.stayImages, url],
+                stayImages: [
+                  ...objData.stayImages,
+                  `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
+                ],
               };
+              await mediaUpload(file, key);
             }
 
             if (file.fieldname.includes(`eachDetail[${each.day}].experienceImages[`)) {
-              let url = await mediaUpload(file);
+              let filename;
+              if (file?.originalname) {
+                filename = file?.originalname;
+              } else {
+                filename = file[0]?.originalname;
+              }
+              let key = `uploads/${uuidv4()}-${filename}`;
               objData = {
                 ...objData,
-                experienceImages: [...objData.experienceImages, url],
+                experienceImages: [
+                  ...objData.experienceImages,
+                  `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
+                ],
               };
+              await mediaUpload(file, key);
             }
 
             if (file.fieldname.includes(`eachDetail[${each.day}].vibeImages[`)) {
-              let url = await mediaUpload(file);
+              let filename;
+              if (file?.originalname) {
+                filename = file?.originalname;
+              } else {
+                filename = file[0]?.originalname;
+              }
+              let key = `uploads/${uuidv4()}-${filename}`;
               objData = {
                 ...objData,
-                vibeImages: [...objData.vibeImages, url],
+                vibeImages: [
+                  ...objData.vibeImages,
+                  `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
+                ],
               };
+              await mediaUpload(file, key);
             }
 
             if (file.fieldname.includes(`eachDetail[${each.day}].tasteImages[`)) {
-              let url = await mediaUpload(file);
+              let filename;
+              if (file?.originalname) {
+                filename = file?.originalname;
+              } else {
+                filename = file[0]?.originalname;
+              }
+              let key = `uploads/${uuidv4()}-${filename}`;
               objData = {
                 ...objData,
-                tasteImages: [...objData.tasteImages, url],
+                tasteImages: [
+                  ...objData.tasteImages,
+                  `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
+                ],
               };
+              await mediaUpload(file, key);
             }
           });
+
         return objData;
       });
     } catch (err) {
       console.log(err);
+      throw err;
     }
   }
+  
 
   async updateItinerary(data, itineraryId) {
     try {
