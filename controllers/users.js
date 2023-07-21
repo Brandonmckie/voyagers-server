@@ -1042,20 +1042,19 @@ async getCountries(req, res) {
   async updateUser(req, res) {
     try {
       let image;
-      if (req.file) {
-        image = process.env.BASE_URL + "/img/" + req.file?.filename;
+      if (req.files) {
+        let url = await mediaUpload(req.files);
+        image = url;
+      } else {
+        image = req.body.image;
       }
 
-      const user = await userService.updateUser(
-        { ...req.body, image },
-        req.user.id
-      );
-
+      const user = await userService.updateUser({ ...req.body, image }, req.user.id);
+      console.log(user);
       return res.send(user);
     } catch (err) {
       console.log(err);
     }
   }
-}
 
 export default new UserController();
