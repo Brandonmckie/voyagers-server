@@ -73,9 +73,8 @@ class UserService {
    * @param image image to update
    * @param userId userId of the user to be updated
    **/
-  async updateUser(data, userId) {
+ async updateUser(data, userId) {
     try {
-
       const values = {};
 
       if (data.username) {
@@ -86,13 +85,16 @@ class UserService {
         values.email = data.email;
       }
 
-      if (data.image) {
+      if (data?.image) {
+        console.log(data.image);
         values.image = data.image;
       }
 
-      const user = await User.findByIdAndUpdate(userId, { $set: data });
+      const user = await User.findByIdAndUpdate(userId, { $set: values });
       return user;
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   /**
