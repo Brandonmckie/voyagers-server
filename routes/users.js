@@ -2,6 +2,7 @@ import express from "express";
 import UserController from "../controllers/users.js";
 import passport from "passport";
 import upload from "../utils/multer.js";
+import multerUpload from "../utils/multerUpload.js";
 var router = express.Router();
 
 /* GET users listing. */
@@ -12,7 +13,7 @@ router.get("/get-profile", passport.authenticate("jwt", { session: false }), Use
 router.get("/get-countries", UserController.getCountries);
 router.patch(
   "/",
-  [passport.authenticate("jwt", { session: false }), upload.single("image")],
+  [passport.authenticate("jwt", { session: false }),  multerUpload.any()],
   UserController.updateUser
 );
 
