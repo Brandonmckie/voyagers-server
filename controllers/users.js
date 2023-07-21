@@ -1056,5 +1056,5 @@ async getCountries(req, res) {
       console.log(err);
     }
   }
-
+}
 export default new UserController();
