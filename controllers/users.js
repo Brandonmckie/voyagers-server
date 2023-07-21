@@ -1,6 +1,7 @@
 import Itinerary from "../models/Itinerary.js";
 import User from "../models/User.js";
 import userService from "../services/userService.js";
+import { mediaUpload } from "../utils/amazonUpload.js";
 import stripe from "../utils/stripe.js";
 
 let countries = {
