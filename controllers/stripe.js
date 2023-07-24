@@ -59,15 +59,22 @@ class StripeController {
 
   async getUser(req, res) {
     try {
-
-      let userAccount = await User.findById(req.user.id).select("+accountId +isCompleted +role");
-
+      let userAccount = await User.findById(req.user.id).select(
+        "+accountId +isCompleted +role +stripeConnected"
+      );
+      console.log(userAccount, 63);
       if (!userAccount.accountId) {
         return res.send({ isCompleted: false });
       } else {
-        return res.send({ isCompleted: true });
+        if (userAccount.stripeConnected) {
+          return res.send({ isCompleted: true, stripeConnected: true });
+        } else {
+          return res.send({ isCompleted: true, stripeConnected: false });
+        }
       }
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async getStripeAccount(req, res) {
