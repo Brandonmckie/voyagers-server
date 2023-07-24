@@ -1,5 +1,7 @@
 import Itinerary from "../models/Itinerary.js";
 import { mediaUpload } from "../utils/amazonUpload.js";
+import { v4 as uuidv4 } from "uuid";
+
 
 class ItineraryService {
   async addItinerary(values) {
