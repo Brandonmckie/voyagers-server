@@ -36,7 +36,7 @@ router.delete(
 router.patch("/deleteDay", passport.authenticate("jwt", { session: false }), Itinerary.deleteDay);
 router.patch(
   "/:itineraryId",
-  [passport.authenticate("jwt", { session: false }), upload.any()],
+  [passport.authenticate("jwt", { session: false }), multerUpload.any()],
   Itinerary.updateItinerary
 );
 // router.post("/add-user", UserController.addUser);
