@@ -908,9 +908,7 @@ let countries = {
 class UserController {
   async login(req, res) {
     try {
-      let { values, isValid, errors } = userService.validateLoginInput(
-        req.body
-      );
+      let { values, isValid, errors } = userService.validateLoginInput(req.body);
 
       if (!isValid) {
         return res.status(400).json(errors);
@@ -921,9 +919,7 @@ class UserController {
       if (status === "OK") {
         return res.send({ token });
       } else {
-        return res
-          .status(401)
-          .json(error || { error: "email/password is wrong" });
+        return res.status(401).json(error || { error: "email/password is wrong" });
       }
     } catch (err) {
       console.log(console.log(err));
@@ -932,9 +928,7 @@ class UserController {
 
   async addUser(req, res) {
     try {
-      let { values, errors, isValid } = userService.validateRegisterInput(
-        req.body
-      );
+      let { values, errors, isValid } = userService.validateRegisterInput(req.body);
 
       if (!isValid) {
         return res.status(400).json(errors);
@@ -955,21 +949,25 @@ class UserController {
   async getUser(req, res) {
     try {
       const user = await User.findById(req.user.id).select("+email +accountId");
+      res.send({
+        user: {
+          ...user._doc,
+          stripeConnected: true,
+        },
+      });
 
       const destinationAccount = await stripe.accounts.retrieve(user.accountId);
       res.send({
         user: {
           ...user._doc,
-          stripeConnected:
-            destinationAccount?.capabilities?.transfers === "active",
+          stripeConnected: destinationAccount?.capabilities?.transfers === "active",
         },
       });
 
       if (user) {
         let updatedUser = await User.findByIdAndUpdate(req.user.id, {
           $set: {
-            stripeConnected:
-              destinationAccount?.capabilities?.transfers === "active",
+            stripeConnected: destinationAccount?.capabilities?.transfers === "active",
           },
         });
         console.log(updatedUser);
@@ -989,32 +987,31 @@ class UserController {
       console.log(error);
     }
   }
-async getCountries(req, res) {
-  try {
-    const itineraries = await Itinerary.find();
-    const filteredCountries = {};
+  async getCountries(req, res) {
+    try {
+      const itineraries = await Itinerary.find();
+      const filteredCountries = {};
 
-    Object.entries(countries).forEach(([countryKey, countryValues]) => {
-      const uniqueCountries = [];
-      itineraries.forEach((itinerary) => {
-        const country = countryValues.find((val) => itinerary.country === val.code);
+      Object.entries(countries).forEach(([countryKey, countryValues]) => {
+        const uniqueCountries = [];
+        itineraries.forEach((itinerary) => {
+          const country = countryValues.find((val) => itinerary.country === val.code);
 
-        if (country && !uniqueCountries.some((c) => c.code === country.code)) {
-          uniqueCountries.push(country);
+          if (country && !uniqueCountries.some((c) => c.code === country.code)) {
+            uniqueCountries.push(country);
+          }
+        });
+
+        if (uniqueCountries.length > 0) {
+          filteredCountries[countryKey] = uniqueCountries;
         }
       });
 
-      if (uniqueCountries.length > 0) {
-        filteredCountries[countryKey] = uniqueCountries;
-      }
-    });
-
-    return res.send(filteredCountries);
-  } catch (err) {
-    console.log(err);
+      return res.send(filteredCountries);
+    } catch (err) {
+      console.log(err);
+    }
   }
-}
-
 
   async getCountriesld(req, res) {
     try {

@@ -59,15 +59,22 @@ class StripeController {
 
   async getUser(req, res) {
     try {
-
-      let userAccount = await User.findById(req.user.id).select("+accountId +isCompleted +role");
-
+      let userAccount = await User.findById(req.user.id).select(
+        "+accountId +isCompleted +role +stripeConnected"
+      );
+      console.log(userAccount, 63);
       if (!userAccount.accountId) {
         return res.send({ isCompleted: false });
       } else {
-        return res.send({ isCompleted: true });
+        if (userAccount.stripeConnected) {
+          return res.send({ isCompleted: true, stripeConnected: true });
+        } else {
+          return res.send({ isCompleted: true, stripeConnected: false });
+        }
       }
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async getStripeAccount(req, res) {
@@ -89,8 +96,10 @@ class StripeController {
 
   async checkout(req, res) {
     try {
-
-      let itinerary = await Itinerary.findById(req.body.itineraryId).populate({ path: "userId", select: "+accountId" });
+      let itinerary = await Itinerary.findById(req.body.itineraryId).populate({
+        path: "userId",
+        select: "+accountId",
+      });
       const user = await User.findById(req.user.id).select("+email");
       if (!user) {
         return res.send({ errors: "errors" });
@@ -119,12 +128,18 @@ class StripeController {
             destination: itinerary.userId.accountId,
           },
         },
-        success_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + `?status=success&check=${req.body.isChecked}`,
+        success_url:
+          process.env.HOST_URL +
+          "/itinerary/view/" +
+          itinerary._id +
+          `?status=success&check=${req.body.isChecked}`,
         cancel_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + "?status=cancel",
       });
 
       return res.send(session.url);
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 
