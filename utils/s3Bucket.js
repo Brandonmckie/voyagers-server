@@ -13,35 +13,35 @@ export const s3Uploadv2 = async (file, key) => {
   }
 
   const s3client = new S3Client({
-    region: process.env.region,
+    region: process.env.S3_REGION,
     credentials: {
-      accessKeyId: process.env.accessKeyId,
-      secretAccessKey: process.env.secretAccessKey,
+      accessKeyId: process.env.S3_ACCESSKEYID,
+      secretAccessKey: process.env.S3_SECRETACCESSKEY,
     },
   });
 
   const params = {
-    Bucket: process.env.bucketname,
+    Bucket: process.env.S3_BUCKETNAME,
     Key: key ? key : `uploads/${uuidv4()}-${filename}`,
     Body: fileBuffer,
   };
   let data = await s3client.send(new PutObjectCommand(params));
-  let fileLocation = `https://${process.env.bucketname}.s3.amazonaws.com/${params.Key}`;
+  let fileLocation = `https://${process.env.S3_BUCKETNAME}.s3.amazonaws.com/${params.Key}`;
   return fileLocation;
 };
 
 export const s3Uploadv3 = async (files) => {
   const s3client = new S3Client({
-    region: process.env.region,
+    region: process.env.S3_REGION,
     credentials: {
-      accessKeyId: process.env.accessKeyId,
-      secretAccessKey: process.env.secretAccessKey,
+      accessKeyId: process.env.S3_ACCESSKEYID,
+      secretAccessKey: process.env.S3_SECRETACCESSKEY,
     },
   });
 
   const params = files.map((file) => {
     return {
-      Bucket: process.env.bucketname,
+      Bucket: process.env.S3_BUCKETNAME,
       Key: file.key,
       Body: file.file.buffer,
     };

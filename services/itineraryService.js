@@ -81,7 +81,7 @@ class ItineraryService {
                 ...objData,
                 stayImages: [
                   ...objData.stayImages,
-                  `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
+                  `https://${process.env.S3_BUCKETNAME}.s3.amazonaws.com/${key}`,
                 ],
               };
               images.push({ file, key });
@@ -99,7 +99,7 @@ class ItineraryService {
                 ...objData,
                 experienceImages: [
                   ...objData.experienceImages,
-                  `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
+                  `https://${process.env.S3_BUCKETNAME}.s3.amazonaws.com/${key}`,
                 ],
               };
               images.push({ file, key });
@@ -118,7 +118,7 @@ class ItineraryService {
                 ...objData,
                 vibeImages: [
                   ...objData.vibeImages,
-                  `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
+                  `https://${process.env.S3_BUCKETNAME}.s3.amazonaws.com/${key}`,
                 ],
               };
               images.push({ file, key });
@@ -136,7 +136,7 @@ class ItineraryService {
                 ...objData,
                 tasteImages: [
                   ...objData.tasteImages,
-                  `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
+                  `https://${process.env.S3_BUCKETNAME}.s3.amazonaws.com/${key}`,
                 ],
               };
               images.push({ file, key });
