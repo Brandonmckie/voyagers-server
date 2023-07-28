@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import itineraryService from "../services/itineraryService.js";
 import ItineraryModel from "../models/Itinerary.js";
 import { mediaUpload } from "../utils/amazonUpload.js";
+import { s3Uploadv3 } from "../utils/s3Bucket.js";
 
 class Itinerary {
   async addItinierary(req, res) {
@@ -11,11 +12,12 @@ class Itinerary {
         req.files
       );
 
-      const parseData = itineraryService.parseImages(req.files, req.body);
+      const { data0, images } = itineraryService.parseImages(req.files, req.body);
 
       if (!isValid) {
         return res.status(400).json(errors);
       }
+      let url0 = await s3Uploadv3(images);
       let image = req.files.find((each) => each.fieldname === "image");
       let url = await mediaUpload(image);
 
@@ -23,7 +25,7 @@ class Itinerary {
         ...values,
         userId: req.user.id,
         image: url,
-        eachDetail: parseData,
+        eachDetail: data0,
       });
       console.log(itinerary);
       return res.send(itinerary);
@@ -49,7 +51,7 @@ class Itinerary {
       // query["userId.stripeConnected"] = true;
 
       const itineraries = await itineraryService.getListing(query, limit);
-      
+
       return res.send(itineraries);
     } catch (error) {
       console.log(error);
@@ -165,12 +167,13 @@ class Itinerary {
         req.body,
         req.files
       );
-      const parseData = itineraryService.parseImages(req.files, req.body);
+      const { data0, images } = itineraryService.parseImages(req.files, req.body);
       let itineraryId = req.params.itineraryId;
 
       if (!isValid) {
         return res.status(400).json(errors);
       }
+      let url0 = await s3Uploadv3(images);
       let image = req.files?.find((each) => each.fieldname === "image");
 
       let itinerary = await itineraryService.updateItinerary(
@@ -178,7 +181,7 @@ class Itinerary {
           ...values,
           userId: req.user.id,
           image: image ? process.env.BASE_URL + "/img/" + image?.filename : req.body.image,
-          eachDetail: parseData,
+          eachDetail: data0,
         },
         itineraryId
       );

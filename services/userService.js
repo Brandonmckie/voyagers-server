@@ -11,8 +11,8 @@ class UserService {
    * @param password password for login
    **/
   async loginUser({ email, password }) {
+    console.log(password);
     try {
-
       // Check if the email already exists
       const user = await User.findOne({ email }).select("+password +email");
 
@@ -21,7 +21,9 @@ class UserService {
       }
 
       // Compare the provided password with the hashed password in the database
+      console.log(user.password);
       const isMatch = await bcrypt.compare(password, user.password);
+
       if (!isMatch) {
         return { error: { message: "Invalid email or password" }, status: "NO" };
       }
@@ -29,7 +31,6 @@ class UserService {
       // Passwords match, generate and return a JWT token
       const token = jwt.sign({ id: user.id, role: user.role }, config.jwtSecretKey);
       return { token, status: "OK" };
-
     } catch (error) {
       console.log(error);
     }
@@ -44,7 +45,6 @@ class UserService {
    **/
   async addUser({ email, password, username, role }) {
     try {
-
       // Check if the email already exists
       const existingUser = await User.findOne({ email });
       if (existingUser) {
@@ -59,7 +59,6 @@ class UserService {
       const token = jwt.sign({ id: newUser.id, role: newUser.role }, config.jwtSecretKey);
 
       return { status: "OK", user: newUser, token };
-
     } catch (error) {
       console.log(error);
     }
@@ -73,7 +72,7 @@ class UserService {
    * @param image image to update
    * @param userId userId of the user to be updated
    **/
- async updateUser(data, userId) {
+  async updateUser(data, userId) {
     try {
       const values = {};
 
@@ -105,14 +104,14 @@ class UserService {
    **/
   validateLoginInput({ email, password }) {
     try {
-
       const errors = {};
 
       // Validate email
       if (email?.trim() === "") {
         errors.email = "Email field shouldn't be empty";
       } else {
-        let regExp = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
+        let regExp =
+          /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
         if (!email.match(regExp)) {
           errors.email = "Invalid Email";
         }
@@ -131,7 +130,9 @@ class UserService {
         isValid: Object.keys(errors).length === 0,
         values: { email, password },
       };
-    } catch (err) { console.log(err) }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   /**
@@ -143,7 +144,6 @@ class UserService {
    **/
   validateRegisterInput({ email, password, username, role }) {
     try {
-
       const errors = {};
 
       // validate name
@@ -160,7 +160,8 @@ class UserService {
       if (!email || email?.trim() === "") {
         errors.email = "Email field shouldn't be empty";
       } else {
-        let regExp = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
+        let regExp =
+          /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
         if (!email.match(regExp)) {
           errors.email = "Invalid Email";
         }
@@ -179,6 +180,29 @@ class UserService {
         errors,
         isValid: Object.keys(errors).length === 0,
         values: { email, password, username, role },
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  validatePasswordInput({ email, password, username, role }) {
+    try {
+      const errors = {};
+
+      // validate password
+      if (!password || password === "") {
+        errors.password = "password field shouldn't be empty";
+      } else {
+        if (password.length < 6) {
+          errors.password = "Password should be at least 6 characters";
+        }
+      }
+
+      return {
+        errors,
+        isValid: Object.keys(errors).length === 0,
+        values: { password },
       };
     } catch (error) {
       console.log(error);

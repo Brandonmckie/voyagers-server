@@ -13,4 +13,12 @@ async function hashPassword(next) {
   }
 }
 
+export async function hashPassword1(password) {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
+  } catch (error) {}
+}
+
 export default hashPassword;

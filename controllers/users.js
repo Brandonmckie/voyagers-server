@@ -2,7 +2,9 @@ import Itinerary from "../models/Itinerary.js";
 import User from "../models/User.js";
 import userService from "../services/userService.js";
 import { mediaUpload } from "../utils/amazonUpload.js";
+import { hashPassword1 } from "../utils/hashPassword.js";
 import stripe from "../utils/stripe.js";
+import nodemailer from "nodemailer";
 
 let countries = {
   Asia: [
@@ -1037,6 +1039,55 @@ class UserController {
     }
   }
 
+  async forgotPassword(req, res) {
+    try {
+      console.log(req.body.email);
+      let findUser = await User.findOne({ email: req.body.email });
+      if (!findUser) {
+        res.status(500).send({ email: "User not found" });
+      }
+
+      let code = Math.floor(10000 + Math.random() * 90000);
+
+      let update = await User.findOneAndUpdate(
+        { email: req.body.email },
+        { code: code },
+        { new: true }
+      );
+      console.log(update);
+
+      let transporter = nodemailer.createTransport({
+        host: "smtp.office365.com",
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.USER1,
+          pass: process.env.PASS1,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
+      let mailOptions = {
+        from: process.env.USER1,
+        to: req.body.email,
+        subject: "Verify Your Account",
+        text: `Please use the following code to confirm your account: ${code}`,
+        // html: "<b>Hello world?</b>", // html body
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          res.status(500).send({ message: "Not Sending Email" });
+        } else {
+          console.log("Message sent: %s", info.messageId);
+          res.send({ message: "success" });
+        }
+      });
+    } catch (err) {
+      res.status(500).send({ message: "Not Sending Email" });
+    }
+  }
+
   async updateUser(req, res) {
     try {
       let image;
@@ -1052,6 +1103,70 @@ class UserController {
       return res.send(user);
     } catch (err) {
       console.log(err);
+    }
+  }
+
+  async verifyCode(req, res) {
+    try {
+      console.log(req.body);
+      let confirm = await User.findOne({ email: req.body.email });
+      console.log(confirm);
+      if (!confirm) {
+        return res.status(500).send({ code: "User Not Found" });
+      }
+      let confirm1 = await User.findOne({ email: req.body.email, code: req.body.code });
+      if (!confirm1) {
+        return res.status(500).send({ code: "Incorrect Code" });
+      }
+
+      let confirm0 = await User.findOneAndUpdate(
+        { email: req.body.email, code: req.body.code },
+        {
+          code: null,
+        },
+        { new: true }
+      );
+      res.send({ message: "success" });
+    } catch (err) {
+      res.send({ message: "User Not Found" });
+    }
+  }
+
+  async reenterPassword(req, res) {
+    try {
+      console.log(req.body);
+      let { values, errors, isValid } = userService.validatePasswordInput(req.body);
+      if (!isValid) {
+        return res.status(400).json(errors);
+      }
+      let confirm = await User.findOne({ email: req.body.email });
+      console.log(confirm);
+      if (!confirm) {
+        res.send({ email: "User Not Found" });
+      }
+
+      const hashPassword = await hashPassword1(req.body.password);
+
+      let confirm1 = await User.findOneAndUpdate(
+        {
+          email: req.body.email,
+        },
+        {
+          password: hashPassword,
+        },
+        {
+          new: true,
+        }
+      );
+      console.log(confirm1);
+      if (!confirm1) {
+        res.status(500).send({ code: "No Register" });
+      }
+
+      res.send({ message: "success" });
+    } catch (err) {
+      console.log(err);
+      res.send({ message: "User Not Found" });
     }
   }
 }

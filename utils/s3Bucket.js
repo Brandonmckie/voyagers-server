@@ -11,7 +11,7 @@ export const s3Uploadv2 = async (file, key) => {
     filename = file[0]?.originalname;
     fileBuffer = file[0]?.buffer;
   }
- 
+
   const s3client = new S3Client({
     region: process.env.region,
     credentials: {
@@ -19,7 +19,6 @@ export const s3Uploadv2 = async (file, key) => {
       secretAccessKey: process.env.secretAccessKey,
     },
   });
- 
 
   const params = {
     Bucket: process.env.bucketname,
@@ -33,18 +32,18 @@ export const s3Uploadv2 = async (file, key) => {
 
 export const s3Uploadv3 = async (files) => {
   const s3client = new S3Client({
-    region: "your-aws-region",
+    region: process.env.region,
     credentials: {
-      accessKeyId: "your-access-key-id",
-      secretAccessKey: "your-secret-access-key",
+      accessKeyId: process.env.accessKeyId,
+      secretAccessKey: process.env.secretAccessKey,
     },
   });
 
   const params = files.map((file) => {
     return {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: `uploads/${uuidv4()}-${file.originalname}`,
-      Body: file.buffer,
+      Bucket: process.env.bucketname,
+      Key: file.key,
+      Body: file.file.buffer,
     };
   });
 

@@ -11,6 +11,7 @@ const UserSchema = new Schema({
   image: { type: Schema.Types.String },
   boughtItineraries: [{ type: Schema.Types.ObjectId, ref: "Itinerary" }],
   stripeConnected: { type: Schema.Types.Boolean, default: false },
+  code: { type: Schema.Types.Number },
 });
 
 // Hash the user's password before saving it

@@ -54,9 +54,10 @@ class ItineraryService {
   }
 
   parseImages(files, data) {
+    let images = [];
     try {
       let eachDetail = JSON.parse(data.eachDetail);
-      return eachDetail.map((each, idx) => {
+      let data0 = eachDetail.map((each, idx) => {
         let objData = {
           stayImages: each.stayImages ? [...each.stayImages] : [],
           tasteImages: each.tasteImages ? [...each.tasteImages] : [],
@@ -83,7 +84,7 @@ class ItineraryService {
                   `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
                 ],
               };
-              await mediaUpload(file, key);
+              images.push({ file, key });
             }
 
             if (file.fieldname.includes(`eachDetail[${each.day}].experienceImages[`)) {
@@ -101,7 +102,8 @@ class ItineraryService {
                   `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
                 ],
               };
-              await mediaUpload(file, key);
+              images.push({ file, key });
+              // await mediaUpload(file, key);
             }
 
             if (file.fieldname.includes(`eachDetail[${each.day}].vibeImages[`)) {
@@ -119,7 +121,7 @@ class ItineraryService {
                   `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
                 ],
               };
-              await mediaUpload(file, key);
+              images.push({ file, key });
             }
 
             if (file.fieldname.includes(`eachDetail[${each.day}].tasteImages[`)) {
@@ -137,12 +139,13 @@ class ItineraryService {
                   `https://${process.env.bucketname}.s3.amazonaws.com/${key}`,
                 ],
               };
-              await mediaUpload(file, key);
+              images.push({ file, key });
             }
           });
 
         return objData;
       });
+      return { data0, images };
     } catch (err) {
       console.log(err);
       throw err;
