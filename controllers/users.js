@@ -1054,22 +1054,21 @@ class UserController {
         { code: code },
         { new: true }
       );
-      console.log(update);
 
       let transporter = nodemailer.createTransport({
         host: "smtp.office365.com",
         port: 587,
         secure: false,
         auth: {
-          user: process.env.USER1,
-          pass: process.env.PASS1,
+          user: process.env.SENDER_EMAIL,
+          pass: process.env.SENDER_PASSWORD,
         },
         tls: {
           rejectUnauthorized: false,
         },
       });
       let mailOptions = {
-        from: process.env.USER1,
+        from: process.env.SENDER_EMAIL,
         to: req.body.email,
         subject: "Verify Your Account",
         text: `Please use the following code to confirm your account: ${code}`,

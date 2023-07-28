@@ -72,19 +72,18 @@ class Itinerary {
         port: 587,
         secure: false,
         auth: {
-          user: "Booking@myvoyages.com",
-          pass: "MyVoyages2021$23",
+          user: process.env.SENDER_EMAIL,
+          pass: process.env.SENDER_PASSWORD,
         },
         tls: {
           rejectUnauthorized: false,
         },
       });
       let mailOptions = {
-        from: "Booking@myvoyages.com",
-
-        to: process.env.EMAIL_TO,
+        from: process.env.SENDER_EMAIL,
+        to: process.env.RECEIVER_EMAIL,
         subject: "Checkout Completed",
-        text: `Checkout has been completed for itinerary ID: ${req.params.id}.and the seller name is `,
+        text: `Checkout has been completed for itinerary ID: ${req.params.id} `,
         // html: "<b>Hello world?</b>", // html body
       };
       transporter.sendMail(mailOptions, (error, info) => {
