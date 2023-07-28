@@ -24,10 +24,7 @@ router.get(
   Itinerary.getMyItineraries
 );
 router.get("/sendEmail/:id", passport.authenticate("jwt", { session: false }), Itinerary.sendEmail);
-router.get(
-  "/view/:itineraryId",
-  Itinerary.getSingleItinerary
-);
+router.get("/view/:itineraryId", Itinerary.getSingleItinerary);
 router.delete(
   "/:itinerary",
   passport.authenticate("jwt", { session: false }),
@@ -36,7 +33,7 @@ router.delete(
 router.patch("/deleteDay", passport.authenticate("jwt", { session: false }), Itinerary.deleteDay);
 router.patch(
   "/:itineraryId",
-  [passport.authenticate("jwt", { session: false }), upload.any()],
+  [passport.authenticate("jwt", { session: false }), multerUpload.any()],
   Itinerary.updateItinerary
 );
 // router.post("/add-user", UserController.addUser);

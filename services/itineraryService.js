@@ -1,5 +1,6 @@
 import Itinerary from "../models/Itinerary.js";
 import { mediaUpload } from "../utils/amazonUpload.js";
+import { v4 as uuidv4 } from "uuid";
 
 class ItineraryService {
   async addItinerary(values) {
@@ -52,7 +53,7 @@ class ItineraryService {
     }
   }
 
- parseImages(files, data) {
+  parseImages(files, data) {
     try {
       let eachDetail = JSON.parse(data.eachDetail);
       return eachDetail.map((each, idx) => {
@@ -147,7 +148,6 @@ class ItineraryService {
       throw err;
     }
   }
-  
 
   async updateItinerary(data, itineraryId) {
     try {
