@@ -972,7 +972,6 @@ class UserController {
             stripeConnected: destinationAccount?.capabilities?.transfers === "active",
           },
         });
-        console.log(updatedUser);
         return;
       } else {
         return res.status(400).send({ error: "Something went wrong" });
@@ -992,12 +991,27 @@ class UserController {
   async getCountries(req, res) {
     try {
       const itineraries = await Itinerary.find();
+      const countryCounts = {};
+
+      itineraries.forEach((itinerary) => {
+        if (!countryCounts[itinerary.country]) {
+          countryCounts[itinerary.country] = 0;
+        }
+        countryCounts[itinerary.country]++;
+      });
+
+      const sortedCountries = Object.keys(countryCounts).sort((countryA, countryB) => {
+        return countryCounts[countryB] - countryCounts[countryA];
+      });
+
       const filteredCountries = {};
 
-      Object.entries(countries).forEach(([countryKey, countryValues]) => {
+      sortedCountries.forEach((countryKey) => {
+        const countryValues = countries[countryKey];
         const uniqueCountries = [];
+
         itineraries.forEach((itinerary) => {
-          const country = countryValues.find((val) => itinerary.country === val.code);
+          const country = countryValues?.find((val) => itinerary.country === val.code);
 
           if (country && !uniqueCountries.some((c) => c.code === country.code)) {
             uniqueCountries.push(country);
@@ -1008,6 +1022,11 @@ class UserController {
           filteredCountries[countryKey] = uniqueCountries;
         }
       });
+
+      console.log(
+        "🚀 ~ file: users.js:1043 ~ UserController ~ getCountries ~ filteredCountries:",
+        filteredCountries
+      );
 
       return res.send(filteredCountries);
     } catch (err) {
@@ -1098,7 +1117,7 @@ class UserController {
       }
 
       const user = await userService.updateUser({ ...req.body, image }, req.user.id);
-      console.log(user);
+      // console.log(user);
       return res.send(user);
     } catch (err) {
       console.log(err);
@@ -1113,7 +1132,10 @@ class UserController {
       if (!confirm) {
         return res.status(500).send({ code: "User Not Found" });
       }
-      let confirm1 = await User.findOne({ email: req.body.email, code: req.body.code });
+      let confirm1 = await User.findOne({
+        email: req.body.email,
+        code: req.body.code,
+      });
       if (!confirm1) {
         return res.status(500).send({ code: "Incorrect Code" });
       }

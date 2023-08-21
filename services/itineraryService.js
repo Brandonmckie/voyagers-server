@@ -174,6 +174,29 @@ class ItineraryService {
     }
   }
 
+  async TopCountries(id, userId) {
+    try {
+      const topCountries = await Itinerary.aggregate([
+        {
+          $group: {
+            _id: "$country",
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { count: -1 },
+        },
+        {
+          $limit: 5,
+        },
+      ]);
+      return topCountries;
+      console.log(topCountries);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   validateItineraryInput(data, files) {
     try {
       let errors = {};

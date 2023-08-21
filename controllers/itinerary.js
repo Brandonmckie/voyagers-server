@@ -100,6 +100,15 @@ class Itinerary {
     }
   }
 
+  async TopCountries(req, res) {
+    try {
+      let topCountries = await itineraryService.TopCountries();
+      res.send(topCountries);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async getPurchasedItineraries(req, res) {
     try {
       let user = await User.findById(req.user.id).select("boughtItineraries");

@@ -31,6 +31,7 @@ router.delete(
   Itinerary.deleteItinerary
 );
 router.patch("/deleteDay", passport.authenticate("jwt", { session: false }), Itinerary.deleteDay);
+router.get("/topCountries", Itinerary.TopCountries);
 router.patch(
   "/:itineraryId",
   [passport.authenticate("jwt", { session: false }), multerUpload.any()],
