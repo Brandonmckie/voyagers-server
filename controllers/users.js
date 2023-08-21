@@ -951,12 +951,7 @@ class UserController {
   async getUser(req, res) {
     try {
       const user = await User.findById(req.user.id).select("+email +accountId");
-      res.send({
-        user: {
-          ...user._doc,
-          stripeConnected: true,
-        },
-      });
+  
 
       const destinationAccount = await stripe.accounts.retrieve(user.accountId);
       res.send({
