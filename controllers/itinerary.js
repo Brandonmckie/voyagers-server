@@ -109,6 +109,15 @@ class Itinerary {
     }
   }
 
+  async getuserItinerary(req, res) {
+    try {
+      let itineraries = await itineraryService.singleuserItinerary(req.query.username);
+      res.send(itineraries);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async getPurchasedItineraries(req, res) {
     try {
       let user = await User.findById(req.user.id).select("boughtItineraries");

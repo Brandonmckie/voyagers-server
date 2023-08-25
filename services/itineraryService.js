@@ -1,4 +1,5 @@
 import Itinerary from "../models/Itinerary.js";
+import User from "../models/User.js";
 import { mediaUpload } from "../utils/amazonUpload.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -192,6 +193,17 @@ class ItineraryService {
       ]);
       return topCountries;
       console.log(topCountries);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  async singleuserItinerary(username) {
+    try {
+      let user = await User.findOne({ username: username });
+      console.log(user);
+      const itinerary = await Itinerary.find({ userId: user._id });
+      console.log(itinerary);
+      return itinerary;
     } catch (err) {
       console.log(err);
     }

@@ -22,6 +22,11 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   UserController.getUser
 );
+router.get(
+  "/get-userprofile",
+  passport.authenticate("jwt", { session: false }),
+  UserController.userProfile
+);
 router.get("/get-countries", UserController.getCountries);
 router.patch(
   "/",

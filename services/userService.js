@@ -46,6 +46,11 @@ class UserService {
   async addUser({ email, password, username, role }) {
     try {
       // Check if the email already exists
+      const existingUserName = await User.findOne({ username });
+      if (existingUserName) {
+        return { error: { message: "User Name already exists" }, status: "NO" };
+      }
+
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return { error: { message: "Email already exists" }, status: "NO" };
@@ -73,24 +78,36 @@ class UserService {
    * @param userId userId of the user to be updated
    **/
   async updateUser(data, userId) {
-    
     try {
+      let userData = await User.findOne({ _id: userId.id });
+      const existingUserName = await User.findOne({ username: data.username });
+
+      if (existingUserName && existingUserName.username !== userData.username) {
+        console.log("User Name already exists");
+        return { error: { message: "User Name already exists" }, status: "NO" };
+      }
+      const existingUser = await User.findOne({ email: data.email });
+      if (existingUser && existingUser.email !== userData.email) {
+        console.log("Email already exists");
+        return { error: { message: "Email already exists" }, status: "NO" };
+      }
+
       const values = {};
-      
+
       if (data.username) {
         values.username = data.username;
       }
-      
+
       if (data.email) {
         values.email = data.email;
       }
-      
+
       if (data?.image) {
         values.image = data.image;
       }
-      
-      console.log("data -", JSON.stringify(data))
-      const user = await User.findByIdAndUpdate(userId, { $set: data });
+
+      console.log("data -", JSON.stringify(data));
+      const user = await User.findByIdAndUpdate(userId.id, { $set: data });
       return user;
     } catch (err) {
       console.log(err);

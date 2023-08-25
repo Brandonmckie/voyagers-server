@@ -25,6 +25,8 @@ router.get(
 );
 router.get("/sendEmail/:id", passport.authenticate("jwt", { session: false }), Itinerary.sendEmail);
 router.get("/view/:itineraryId", Itinerary.getSingleItinerary);
+router.get("/userItinerary", Itinerary.getuserItinerary);
+
 router.delete(
   "/:itinerary",
   passport.authenticate("jwt", { session: false }),

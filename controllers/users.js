@@ -951,8 +951,13 @@ class UserController {
   async getUser(req, res) {
     try {
       const user = await User.findById(req.user.id).select("+email +accountId");
-  
 
+      res.send({
+        user: {
+          ...user._doc,
+          stripeConnected: true,
+        },
+      });
       const destinationAccount = await stripe.accounts.retrieve(user.accountId);
       res.send({
         user: {
@@ -972,6 +977,20 @@ class UserController {
         return res.status(400).send({ error: "Something went wrong" });
       }
     } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async userProfile(req, res) {
+    try {
+      console.log(req.query.name);
+      const user = await User.findOne({ username: req.query.name });
+      console.log(user);
+      res.send({ user: user });
+    } catch (err) {
+      res.status(400).send({
+        status: false,
+      });
       console.log(err);
     }
   }
@@ -1111,7 +1130,7 @@ class UserController {
         image = req.body.image;
       }
 
-      const user = await userService.updateUser({ ...req.body, image }, req.user.id);
+      const user = await userService.updateUser({ ...req.body, image }, req.user);
       // console.log(user);
       return res.send(user);
     } catch (err) {

@@ -3,7 +3,7 @@ import hashPassword from "../utils/hashPassword.js";
 
 const UserSchema = new Schema({
   username: { type: Schema.Types.String, required: true },
-  email: { type: Schema.Types.String, required: true, select: false },
+  email: { type: Schema.Types.String, required: true, select: true },
   password: { type: Schema.Types.String, required: true, select: false },
   accountId: { type: Schema.Types.String, select: false },
   isCompleted: { type: Schema.Types.Boolean },
