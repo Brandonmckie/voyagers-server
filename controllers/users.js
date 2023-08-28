@@ -983,9 +983,7 @@ class UserController {
 
   async userProfile(req, res) {
     try {
-      console.log(req.query.name);
       const user = await User.findOne({ username: req.query.name });
-      console.log(user);
       res.send({ user: user });
     } catch (err) {
       res.status(400).send({

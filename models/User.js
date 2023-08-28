@@ -19,12 +19,13 @@ const UserSchema = new Schema({
   userInfo: {
     name: {
       type: Schema.Types.String,
+      default: "",
     },
     voyageStyle: [Schema.Types.String],
-    country: Schema.Types.String,
+    country: { type: Schema.Types.String, default: "" },
     visitedCountries: [{ label: Schema.Types.String, value: Schema.Types.String }],
     visitedWonders: [{ label: Schema.Types.String, value: Schema.Types.String }],
-    bio: Schema.Types.String,
+    bio: { type: Schema.Types.String, default: "" },
   },
 });
 
