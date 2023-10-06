@@ -1053,7 +1053,6 @@ class UserController {
 
       Object.entries(countries).filter((each) => {
         itineraries.map((itinerary) => {
-          console.log(itinerary.country, each[1]);
           let country = each[1].find((val) => itinerary.country === val.code);
 
           if (country) {
@@ -1072,7 +1071,6 @@ class UserController {
 
   async forgotPassword(req, res) {
     try {
-      console.log(req.body.email);
       let findUser = await User.findOne({ email: req.body.email });
       if (!findUser) {
         res.status(500).send({ email: "User not found" });
@@ -1109,7 +1107,6 @@ class UserController {
         if (error) {
           res.status(500).send({ message: "Not Sending Email" });
         } else {
-          console.log("Message sent: %s", info.messageId);
           res.send({ message: "success" });
         }
       });

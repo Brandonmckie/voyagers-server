@@ -62,7 +62,7 @@ class StripeController {
       let userAccount = await User.findById(req.user.id).select(
         "+accountId +isCompleted +role +stripeConnected"
       );
-      console.log(userAccount, 63);
+
       if (!userAccount.accountId) {
         return res.send({ isCompleted: false });
       } else {

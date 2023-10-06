@@ -9,7 +9,7 @@ const UserSchema = new Schema({
   isCompleted: { type: Schema.Types.Boolean },
   role: {
     type: Schema.Types.String,
-    enum: ["user", "seller"],
+    enum: ["user", "seller", "influencer"],
     default: "user",
   },
   image: { type: Schema.Types.String },

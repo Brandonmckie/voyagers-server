@@ -4,12 +4,18 @@ const ItinerarySchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   country: { type: mongoose.Schema.Types.String, required: true },
   title: { type: mongoose.Schema.Types.String, required: true },
-  price: { type: mongoose.Schema.Types.String, required: true },
-  introduction: { type: mongoose.Schema.Types.String, required: true },
-  image: { type: mongoose.Schema.Types.String, required: true },
-  salesPitch: { type: mongoose.Schema.Types.String, required: true },
+  price: { type: mongoose.Schema.Types.String },
+  introduction: { type: mongoose.Schema.Types.String },
+  image: { type: mongoose.Schema.Types.String },
+  salesPitch: { type: mongoose.Schema.Types.String },
   // details: { type: mongoose.Schema.Types.String, required: true },
-  category: [{ type: mongoose.Schema.Types.String, enum: ["stay", "taste", "vibe", "experience"], required: true }],
+  category: [
+    {
+      type: mongoose.Schema.Types.String,
+      enum: ["stay", "taste", "vibe", "experience"],
+      required: true,
+    },
+  ],
   eachDetail: [
     {
       day: { type: mongoose.Schema.Types.Number },
