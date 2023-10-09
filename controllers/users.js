@@ -952,19 +952,24 @@ class UserController {
     try {
       const user = await User.findById(req.user.id).select("+email +accountId");
 
-  
-      const destinationAccount = await stripe.accounts.retrieve(user.accountId);
       res.send({
         user: {
           ...user._doc,
-          stripeConnected: destinationAccount?.capabilities?.transfers === "active",
+          stripeConnected: true,
         },
       });
+      // const destinationAccount = await stripe.accounts.retrieve(user.accountId);
+      // res.send({
+      //   user: {
+      //     ...user._doc,
+      //     stripeConnected: destinationAccount?.capabilities?.transfers === "active",
+      //   },
+      // });
 
       if (user) {
         let updatedUser = await User.findByIdAndUpdate(req.user.id, {
           $set: {
-            stripeConnected: destinationAccount?.capabilities?.transfers === "active",
+            stripeConnected: true,
           },
         });
         return;

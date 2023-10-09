@@ -19,13 +19,13 @@ class ItineraryService {
 
       // let filteredItineraries = itineraries.filter((each) => each.userId.stripeConnected);
 
-      let filteredItineraries = itineraries.filter((each) => {
-        if (each.userId?.stripeConnected) {
-          return each;
-        }
-      });
+      // let filteredItineraries = itineraries.filter((each) => {
+      //   if (each.userId?.stripeConnected) {
+      //     return each;
+      //   }
+      // });
 
-      return filteredItineraries;
+      return itineraries;
     } catch (err) {
       console.log(err);
     }
@@ -192,17 +192,17 @@ class ItineraryService {
         },
       ]);
       return topCountries;
-      console.log(topCountries);
     } catch (err) {
       console.log(err);
     }
   }
   async singleuserItinerary(username) {
+    let name = username.toLowerCase();
     try {
-      let user = await User.findOne({ username: username });
-      console.log(user);
-      const itinerary = await Itinerary.find({ userId: user._id });
-      console.log(itinerary);
+      let user = await User.findOne({ username: name });
+      // console.log(user);
+      const itinerary = await Itinerary.find({ userId: user._id }).populate("userId");
+      // console.log(itinerary);
       return itinerary;
     } catch (err) {
       console.log(err);
@@ -223,14 +223,14 @@ class ItineraryService {
       }
 
       // validate Price
-      if (!data.price || data.price?.trim() === "") {
-        errors.price = "Price field shouldn't be empty";
-      }
+      // if (!data.price || data.price?.trim() === "") {
+      //   errors.price = "Price field shouldn't be empty";
+      // }
 
       // validate Introduction
-      if (!data.introduction || data.introduction?.trim() === "") {
-        errors.introduction = "Introduction field shouldn't be empty";
-      }
+      // if (!data.introduction || data.introduction?.trim() === "") {
+      //   errors.introduction = "Introduction field shouldn't be empty";
+      // }
 
       // validate Image
       if (!data.image && (!files || !files.find((each) => each.fieldname === "image"))) {
@@ -238,9 +238,9 @@ class ItineraryService {
       }
 
       // validate Sales Pitch
-      if (!data.salesPitch || data.salesPitch?.trim() === "") {
-        errors.salesPitch = "Sales Pitch field shouldn't be empty";
-      }
+      // if (!data.salesPitch || data.salesPitch?.trim() === "") {
+      //   errors.salesPitch = "Sales Pitch field shouldn't be empty";
+      // }
 
       // validate category
       data.category = JSON.parse(data.category);

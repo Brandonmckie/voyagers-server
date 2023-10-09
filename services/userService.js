@@ -11,7 +11,6 @@ class UserService {
    * @param password password for login
    **/
   async loginUser({ email, password }) {
-    console.log(password);
     try {
       // Check if the email already exists
       const user = await User.findOne({ email }).select("+password +email");
@@ -21,7 +20,6 @@ class UserService {
       }
 
       // Compare the provided password with the hashed password in the database
-      console.log(user.password);
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
@@ -55,9 +53,9 @@ class UserService {
       if (existingUser) {
         return { error: { message: "Email already exists" }, status: "NO" };
       }
-
+      let userRole = "influencer";
       // Create a new user
-      const newUser = new User({ email, password, username, role });
+      const newUser = new User({ email, password, username, role: userRole });
       await newUser.save();
 
       // Passwords match, generate and return a JWT token
@@ -83,12 +81,10 @@ class UserService {
       const existingUserName = await User.findOne({ username: data.username });
 
       if (existingUserName && existingUserName.username !== userData.username) {
-        console.log("User Name already exists");
         return { error: { message: "User Name already exists" }, status: "NO" };
       }
       const existingUser = await User.findOne({ email: data.email });
       if (existingUser && existingUser.email !== userData.email) {
-        console.log("Email already exists");
         return { error: { message: "Email already exists" }, status: "NO" };
       }
 
@@ -106,7 +102,6 @@ class UserService {
         values.image = data.image;
       }
 
-      console.log("data -", JSON.stringify(data));
       const user = await User.findByIdAndUpdate(userId.id, { $set: data });
       return user;
     } catch (err) {
