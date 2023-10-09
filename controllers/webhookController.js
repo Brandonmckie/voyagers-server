@@ -20,15 +20,11 @@ export const handleWebhooks = async (request, response) => {
       const signature = request.headers["stripe-signature"];
       try {
         event = stripe.webhooks.constructEvent(request.body, signature, endpointSecret);
+        console.log(event)
+        console.log(event.type);
       } catch (err) {
         console.log(err);
-        console.log(
-          `⚠️  Webhook signature verification failed.`,
-          err.message,
-          request.body,
-          signature,
-          endpointSecret
-        );
+        console.log(`⚠️  Webhook signature verification failed.`, err.message, request.body, signature, endpointSecret);
         return response.sendStatus(400);
       }
     }

@@ -27,7 +27,7 @@ class Itinerary {
         image: url,
         eachDetail: data0,
       });
-
+      console.log(itinerary);
       return res.send(itinerary);
     } catch (error) {
       console.log(error);
@@ -61,7 +61,7 @@ class Itinerary {
   async sendEmail(req, res) {
     try {
       const user = await User.findById(req.user.id).select("+email");
-
+      console.log(user);
       if (!user) {
         return;
       }
@@ -95,6 +95,7 @@ class Itinerary {
         }
       });
     } catch (error) {
+      console.log("email not sent!");
       console.log(error);
     }
   }
@@ -184,25 +185,19 @@ class Itinerary {
         req.files
       );
       const { data0, images } = itineraryService.parseImages(req.files, req.body);
-
       let itineraryId = req.params.itineraryId;
 
       if (!isValid) {
         return res.status(400).json(errors);
       }
-
       let url0 = await s3Uploadv3(images);
       let image = req.files?.find((each) => each.fieldname === "image");
-      let url;
-      if (image) {
-        url = await mediaUpload(image);
-      }
 
       let itinerary = await itineraryService.updateItinerary(
         {
           ...values,
           userId: req.user.id,
-          image: url ? url : req.body.image,
+          image: image ? process.env.BASE_URL + "/img/" + image?.filename : req.body.image,
           eachDetail: data0,
         },
         itineraryId
@@ -237,6 +232,7 @@ class Itinerary {
 
         const itineraries = await itineraryService.getListing(query);
 
+        console.log(itinerary);
         if (itinerary.deletedCount === 1) {
           return res.json(itineraries);
         }

@@ -20,15 +20,12 @@ class ItineraryService {
       // let filteredItineraries = itineraries.filter((each) => each.userId.stripeConnected);
 
       let filteredItineraries = itineraries.filter((each) => {
-        // if (each.userId?.stripeConnected) {
-        //   return each;
-        // }
-        if (each.image) {
+        if (each.userId?.stripeConnected) {
           return each;
         }
       });
 
-      return itineraries;
+      return filteredItineraries;
     } catch (err) {
       console.log(err);
     }
@@ -38,6 +35,7 @@ class ItineraryService {
     try {
       try {
         const itineraries = await Itinerary.findById(id).populate("userId");
+        console.log("\n\n\n\n Itinerary data");
         return itineraries._doc;
       } catch (err) {
         console.log("\n\n\n\n Erorr", err);
@@ -194,6 +192,7 @@ class ItineraryService {
         },
       ]);
       return topCountries;
+      console.log(topCountries);
     } catch (err) {
       console.log(err);
     }
@@ -201,9 +200,9 @@ class ItineraryService {
   async singleuserItinerary(username) {
     try {
       let user = await User.findOne({ username: username });
-
-      const itinerary = await Itinerary.find({ userId: user._id }).populate("userId");
-
+      console.log(user);
+      const itinerary = await Itinerary.find({ userId: user._id });
+      console.log(itinerary);
       return itinerary;
     } catch (err) {
       console.log(err);
@@ -223,25 +222,25 @@ class ItineraryService {
         errors.country = "Country field shouldn't be empty";
       }
 
-      // // validate Price
-      // if (!data.price || data.price?.trim() === "") {
-      //   errors.price = "Price field shouldn't be empty";
-      // }
+      // validate Price
+      if (!data.price || data.price?.trim() === "") {
+        errors.price = "Price field shouldn't be empty";
+      }
 
-      // // validate Introduction
-      // if (!data.introduction || data.introduction?.trim() === "") {
-      //   errors.introduction = "Introduction field shouldn't be empty";
-      // }
+      // validate Introduction
+      if (!data.introduction || data.introduction?.trim() === "") {
+        errors.introduction = "Introduction field shouldn't be empty";
+      }
 
-      // // validate Image
+      // validate Image
       if (!data.image && (!files || !files.find((each) => each.fieldname === "image"))) {
         errors.image = "Images shouldn't be empty";
       }
 
-      // // validate Sales Pitch
-      // if (!data.salesPitch || data.salesPitch?.trim() === "") {
-      //   errors.salesPitch = "Sales Pitch field shouldn't be empty";
-      // }
+      // validate Sales Pitch
+      if (!data.salesPitch || data.salesPitch?.trim() === "") {
+        errors.salesPitch = "Sales Pitch field shouldn't be empty";
+      }
 
       // validate category
       data.category = JSON.parse(data.category);
