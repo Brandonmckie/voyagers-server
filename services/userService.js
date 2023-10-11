@@ -55,7 +55,15 @@ class UserService {
       }
       let userRole = "influencer";
       // Create a new user
-      const newUser = new User({ email, password, username, role: userRole });
+      const newUser = new User({
+        email,
+        password,
+        image:
+          "https://myvoyagemedia.s3.amazonaws.com/uploads/194b0065-6770-4d6a-a091-246fae11f9bf-img.png",
+        username,
+        role: userRole,
+        userInfo: { name: username },
+      });
       await newUser.save();
 
       // Passwords match, generate and return a JWT token
