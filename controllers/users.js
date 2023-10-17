@@ -916,10 +916,10 @@ class UserController {
         return res.status(400).json(errors);
       }
 
-      let { status, token, error } = await userService.loginUser(values);
+      let { status, token, error, username, info } = await userService.loginUser(values);
 
       if (status === "OK") {
-        return res.send({ token });
+        return res.send({ token, username, info });
       } else {
         return res.status(401).json(error || { error: "email/password is wrong" });
       }

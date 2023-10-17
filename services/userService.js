@@ -13,7 +13,14 @@ class UserService {
   async loginUser({ email, password }) {
     try {
       // Check if the email already exists
-      const user = await User.findOne({ email }).select("+password +email");
+      const user = await User.findOne({ email }).select("+password +email +username");
+      let username = user.username;
+      let info;
+      if (user?.userInfo?.bio) {
+        info = true;
+      } else {
+        info = false;
+      }
 
       if (!user) {
         return { error: { message: "Invalid email or password" }, status: "NO" };
@@ -28,7 +35,7 @@ class UserService {
 
       // Passwords match, generate and return a JWT token
       const token = jwt.sign({ id: user.id, role: user.role }, config.jwtSecretKey);
-      return { token, status: "OK" };
+      return { token, username, info, status: "OK" };
     } catch (error) {
       console.log(error);
     }
@@ -59,7 +66,7 @@ class UserService {
         email,
         password,
         image:
-          "https://myvoyagemedia.s3.amazonaws.com/uploads/194b0065-6770-4d6a-a091-246fae11f9bf-img.png",
+          "https://myvoyagemedia.s3.amazonaws.com/uploads/989b161d-df1b-4d8b-ae51-8faf95e5cc6c-img.jpeg",
         username,
         role: userRole,
         userInfo: { name: username },

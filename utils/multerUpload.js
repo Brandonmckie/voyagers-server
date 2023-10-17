@@ -21,12 +21,12 @@ const storage = multer.memoryStorage();
 // Create the multer instance
 const multerUpload = multer({
   storage,
-  limits: {
-    fileSize: "1000000000000",
-    fieldSize: 25 * 1024 * 1024,
-  },
+  // limits: {
+  //   fileSize: "1000000000000",
+  //   fieldSize: 25 * 1024 * 1024,
+  // },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.split("/")[0] === "image") {
+    if (file.mimetype.split("/")[0] === "image" || file.mimetype.split("/")[0] === "video") {
       cb(null, true);
     } else {
       cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE"), false);
