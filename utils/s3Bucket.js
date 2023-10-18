@@ -31,21 +31,26 @@ export const s3Uploadv2 = async (file, key) => {
 };
 
 export const s3Uploadv3 = async (files) => {
-  const s3client = new S3Client({
-    region: process.env.S3_REGION,
-    credentials: {
-      accessKeyId: process.env.S3_ACCESSKEYID,
-      secretAccessKey: process.env.S3_SECRETACCESSKEY,
-    },
-  });
+  try {
+    const s3client = new S3Client({
+      region: process.env.S3_REGION,
+      credentials: {
+        accessKeyId: process.env.S3_ACCESSKEYID,
+        secretAccessKey: process.env.S3_SECRETACCESSKEY,
+      },
+    });
 
-  const params = files.map((file) => {
-    return {
-      Bucket: process.env.S3_BUCKETNAME,
-      Key: file.key,
-      Body: file.file.buffer,
-    };
-  });
+    const params = files.map((file) => {
+      return {
+        Bucket: process.env.S3_BUCKETNAME,
+        Key: file.key,
+        Body: file.file.buffer,
+      };
+    });
+    console.log(params);
 
-  return await Promise.all(params.map((param) => s3client.send(new PutObjectCommand(param))));
+    return await Promise.all(params.map((param) => s3client.send(new PutObjectCommand(param))));
+  } catch (error) {
+    console.log(error);
+  }
 };
