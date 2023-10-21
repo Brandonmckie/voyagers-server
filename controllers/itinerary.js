@@ -20,7 +20,6 @@ class Itinerary {
       let url0 = await s3Uploadv3(images);
       let image = req.files.find((each) => each.fieldname === "image");
       let url = await mediaUpload(image);
-      console.log(image, 23);
       let itinerary = await itineraryService.addItinerary({
         ...values,
         userId: req.user.id,
