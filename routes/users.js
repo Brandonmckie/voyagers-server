@@ -30,4 +30,10 @@ router.patch(
   UserController.updateUser
 );
 
+router.patch(
+  "/updateuserprofile",
+  [passport.authenticate("jwt", { session: false }), multerUpload.any()],
+  UserController.updateUserProfile
+);
+
 export default router;

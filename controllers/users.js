@@ -1136,6 +1136,38 @@ class UserController {
     }
   }
 
+  async updateUserProfile(req, res) {
+    try {
+      let coverpicture;
+      if (req.files) {
+        let url = await mediaUpload(req.files);
+        coverpicture = url;
+      } else {
+        coverpicture = req.body.image;
+      }
+      let arrayData = JSON.parse(req.body.arrayData);
+
+      let voyageStyle = arrayData[0].allVoyageStyles;
+      let visitedCountries = arrayData[1].visitedCountries;
+      let visitedWonders = arrayData[2].visitedWonders;
+      const user = await userService.updateUser(
+        {
+          userInfo: {
+            ...req.body,
+            coverpicture,
+            voyageStyle,
+            visitedCountries,
+            visitedWonders,
+          },
+        },
+        req.user
+      );
+      return res.send(user);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async verifyCode(req, res) {
     try {
       console.log(req.body);

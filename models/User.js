@@ -27,6 +27,7 @@ const UserSchema = new Schema(
       visitedCountries: [{ label: Schema.Types.String, value: Schema.Types.String }],
       visitedWonders: [{ label: Schema.Types.String, value: Schema.Types.String }],
       bio: { type: Schema.Types.String, default: "" },
+      coverpicture: { type: Schema.Types.String },
     },
   },
   {

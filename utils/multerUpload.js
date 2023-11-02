@@ -27,10 +27,8 @@ const multerUpload = multer({
   // },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.split("/")[0] === "image" || file.mimetype.split("/")[0] === "video") {
-      console.log("okk");
       cb(null, true);
     } else {
-      console.log("okk1");
       cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE"), false);
     }
   },
