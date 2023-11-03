@@ -8,6 +8,7 @@ const UserSchema = new Schema(
     password: { type: Schema.Types.String, required: true, select: false },
     accountId: { type: Schema.Types.String, select: false },
     isCompleted: { type: Schema.Types.Boolean },
+    coverpicture: { type: Schema.Types.String },
     role: {
       type: Schema.Types.String,
       enum: ["user", "seller", "influencer"],
@@ -27,7 +28,6 @@ const UserSchema = new Schema(
       visitedCountries: [{ label: Schema.Types.String, value: Schema.Types.String }],
       visitedWonders: [{ label: Schema.Types.String, value: Schema.Types.String }],
       bio: { type: Schema.Types.String, default: "" },
-      coverpicture: { type: Schema.Types.String },
     },
   },
   {

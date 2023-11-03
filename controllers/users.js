@@ -1121,14 +1121,44 @@ class UserController {
   async updateUser(req, res) {
     try {
       let image;
+      let coverpicture;
       if (req.files) {
-        let url = await mediaUpload(req.files);
-        image = url;
+        if (req.files.length > 1) {
+          if (req.files[0].fieldname === "image") {
+            const url = await mediaUpload(req.files[0]);
+            image = url;
+          }
+          if (req.files[1].fieldname === "coverpicture") {
+            const url = await mediaUpload(req.files[1]);
+            coverpicture = url;
+          }
+        } else {
+          if (req.files[0].fieldname === "image") {
+            const url = await mediaUpload(req.files[0]);
+            image = url;
+          } else {
+            image = req.body.image;
+          }
+          if (req.files[0].fieldname === "coverpicture") {
+            const url = await mediaUpload(req.files[0]);
+            coverpicture = url;
+          } else {
+            coverpicture = req.body.coverpicture;
+          }
+        }
       } else {
         image = req.body.image;
+        coverpicture = req.body.coverpicture;
       }
 
-      const user = await userService.updateUser({ ...req.body, image }, req.user);
+      const user = await userService.updateUser(
+        {
+          ...req.body,
+          image,
+          coverpicture: coverpicture,
+        },
+        req.user
+      );
       // console.log(user);
       return res.send(user);
     } catch (err) {
